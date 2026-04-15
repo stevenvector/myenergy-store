@@ -1,11 +1,11 @@
 <template>
   <div>
     <!-- Filters -->
-    <div class="flex flex-wrap gap-3 mb-6">
+    <div class="flex flex-wrap gap-2 mb-6">
       <button
         v-for="s in statusFilters"
         :key="s.value"
-        class="text-xs font-orbitron px-4 py-2 transition-all"
+        class="text-xs font-orbitron px-3 py-2.5 min-h-[40px] transition-all"
         :style="activeStatus === s.value
           ? `background: ${s.color}20; border: 1px solid ${s.color}; color: ${s.color};`
           : 'background: transparent; border: 1px solid rgba(176,38,255,0.2); color: #6b7280;'"
@@ -26,89 +26,97 @@
         No orders found
       </div>
 
-      <table v-else class="w-full">
-        <thead>
-          <tr style="border-bottom: 1px solid rgba(176,38,255,0.2); background: rgba(176,38,255,0.05);">
-            <th class="text-left px-4 py-3 text-xs font-orbitron text-gray-500 tracking-widest uppercase">Order</th>
-            <th class="text-left px-4 py-3 text-xs font-orbitron text-gray-500 tracking-widest uppercase hidden md:table-cell">Customer</th>
-            <th class="text-left px-4 py-3 text-xs font-orbitron text-gray-500 tracking-widest uppercase hidden lg:table-cell">Items</th>
-            <th class="text-right px-4 py-3 text-xs font-orbitron text-gray-500 tracking-widest uppercase">Total</th>
-            <th class="text-center px-4 py-3 text-xs font-orbitron text-gray-500 tracking-widest uppercase">Status</th>
-            <th class="text-right px-4 py-3 text-xs font-orbitron text-gray-500 tracking-widest uppercase hidden md:table-cell">Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-for="order in filteredOrders" :key="order.id">
-            <tr
-              class="hover:bg-white/3 cursor-pointer transition-colors"
-              style="border-bottom: 1px solid rgba(176,38,255,0.08);"
-              @click="toggleExpand(order.id)"
-            >
-              <td class="px-4 py-3">
-                <p class="font-orbitron text-xs text-neon-cyan">{{ order.id }}</p>
-              </td>
-              <td class="px-4 py-3 hidden md:table-cell">
-                <p class="text-sm text-white font-rajdhani">{{ order.firstName }} {{ order.lastName }}</p>
-                <p class="text-xs text-gray-600 font-rajdhani">{{ order.email }}</p>
-              </td>
-              <td class="px-4 py-3 hidden lg:table-cell">
-                <div class="flex gap-1">
-                  <span v-for="item in (order.items || []).slice(0, 4)" :key="item.id" class="text-sm">{{ item.emoji }}</span>
-                  <span v-if="(order.items || []).length > 4" class="text-xs text-gray-600">+{{ order.items.length - 4 }}</span>
-                </div>
-              </td>
-              <td class="px-4 py-3 text-right">
-                <span class="font-orbitron text-sm text-white">R{{ order.total.toFixed(2) }}</span>
-              </td>
-              <td class="px-4 py-3 text-center">
-                <select
-                  :value="order.status"
-                  class="text-xs font-orbitron px-2 py-1 bg-transparent outline-none cursor-pointer"
-                  :style="statusStyle(order.status)"
-                  @change="updateStatus(order.id, ($event.target as HTMLSelectElement).value)"
-                  @click.stop
-                >
-                  <option v-for="s in orderStatuses" :key="s" :value="s" style="background: #0f0f1a;">{{ s.toUpperCase() }}</option>
-                </select>
-              </td>
-              <td class="px-4 py-3 text-right hidden md:table-cell">
-                <span class="text-xs text-gray-600 font-rajdhani">{{ formatDate(order.createdAt) }}</span>
-              </td>
+      <div v-else class="overflow-x-auto">
+        <table class="w-full min-w-[480px]">
+          <thead>
+            <tr style="border-bottom: 1px solid rgba(176,38,255,0.2); background: rgba(176,38,255,0.05);">
+              <th class="text-left px-4 py-3 text-xs font-orbitron text-gray-500 tracking-widest uppercase">Order</th>
+              <th class="text-left px-4 py-3 text-xs font-orbitron text-gray-500 tracking-widest uppercase hidden md:table-cell">Customer</th>
+              <th class="text-left px-4 py-3 text-xs font-orbitron text-gray-500 tracking-widest uppercase hidden lg:table-cell">Items</th>
+              <th class="text-right px-4 py-3 text-xs font-orbitron text-gray-500 tracking-widest uppercase">Total</th>
+              <th class="text-center px-4 py-3 text-xs font-orbitron text-gray-500 tracking-widest uppercase">Status</th>
+              <th class="text-right px-4 py-3 text-xs font-orbitron text-gray-500 tracking-widest uppercase hidden md:table-cell">Date</th>
             </tr>
-
-            <!-- Expanded row -->
-            <tr v-if="expandedId === order.id" style="background: rgba(176,38,255,0.04); border-bottom: 1px solid rgba(176,38,255,0.15);">
-              <td colspan="6" class="px-6 py-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <p class="text-xs font-orbitron text-gray-500 tracking-widest uppercase mb-2">Shipping Address</p>
-                    <p class="text-sm font-rajdhani text-gray-300">{{ order.address }}</p>
-                    <p class="text-sm font-rajdhani text-gray-300">{{ order.city }}, {{ order.postcode }}</p>
-                    <p class="text-sm font-rajdhani text-gray-300">{{ order.country }}</p>
+          </thead>
+          <tbody>
+            <template v-for="order in filteredOrders" :key="order.id">
+              <tr
+                class="hover:bg-white/3 cursor-pointer transition-colors"
+                style="border-bottom: 1px solid rgba(176,38,255,0.08);"
+                @click="toggleExpand(order.id)"
+              >
+                <td class="px-4 py-3">
+                  <p class="font-orbitron text-xs text-neon-cyan">{{ order.id }}</p>
+                </td>
+                <td class="px-4 py-3 hidden md:table-cell">
+                  <p class="text-sm text-white font-rajdhani">{{ order.firstName }} {{ order.lastName }}</p>
+                  <p class="text-xs text-gray-600 font-rajdhani">{{ order.email }}</p>
+                </td>
+                <td class="px-4 py-3 hidden lg:table-cell">
+                  <div class="flex gap-1">
+                    <span v-for="item in (order.items || []).slice(0, 4)" :key="item.id" class="text-sm">{{ item.emoji }}</span>
+                    <span v-if="(order.items || []).length > 4" class="text-xs text-gray-600">+{{ order.items.length - 4 }}</span>
                   </div>
-                  <div>
-                    <p class="text-xs font-orbitron text-gray-500 tracking-widest uppercase mb-2">Order Items</p>
-                    <div class="space-y-1">
-                      <div v-for="item in (order.items || [])" :key="item.id" class="flex justify-between text-sm font-rajdhani">
-                        <span class="text-gray-300">{{ item.emoji }} {{ item.productName }} × {{ item.quantity }}</span>
-                        <span class="text-white">R{{ (parseFloat(item.price) * item.quantity).toFixed(2) }}</span>
+                </td>
+                <td class="px-4 py-3 text-right">
+                  <span class="font-orbitron text-sm text-white">R{{ order.total.toFixed(2) }}</span>
+                </td>
+                <td class="px-4 py-3 text-center">
+                  <select
+                    :value="order.status"
+                    class="text-xs font-orbitron px-2 py-2 min-h-[40px] bg-transparent outline-none cursor-pointer"
+                    :style="statusStyle(order.status)"
+                    @change="updateStatus(order.id, ($event.target as HTMLSelectElement).value)"
+                    @click.stop
+                  >
+                    <option v-for="s in orderStatuses" :key="s" :value="s" style="background: #0f0f1a;">{{ s.toUpperCase() }}</option>
+                  </select>
+                </td>
+                <td class="px-4 py-3 text-right hidden md:table-cell">
+                  <span class="text-xs text-gray-600 font-rajdhani">{{ formatDate(order.createdAt) }}</span>
+                </td>
+              </tr>
+
+              <!-- Expanded row -->
+              <tr v-if="expandedId === order.id" style="background: rgba(176,38,255,0.04); border-bottom: 1px solid rgba(176,38,255,0.15);">
+                <td colspan="6" class="px-4 sm:px-6 py-4">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <p class="text-xs font-orbitron text-gray-500 tracking-widest uppercase mb-2">Shipping Address</p>
+                      <p class="text-sm font-rajdhani text-gray-300">{{ order.address }}</p>
+                      <p class="text-sm font-rajdhani text-gray-300">{{ order.city }}, {{ order.postcode }}</p>
+                      <p class="text-sm font-rajdhani text-gray-300">{{ order.country }}</p>
+                      <!-- Customer info visible on mobile (hidden in table) -->
+                      <div class="mt-3 md:hidden">
+                        <p class="text-xs font-orbitron text-gray-500 tracking-widest uppercase mb-1">Customer</p>
+                        <p class="text-sm text-white font-rajdhani">{{ order.firstName }} {{ order.lastName }}</p>
+                        <p class="text-xs text-gray-600 font-rajdhani">{{ order.email }}</p>
                       </div>
-                      <div class="flex justify-between text-sm font-rajdhani pt-1 border-t border-neon-purple/20">
-                        <span class="text-gray-500">Shipping</span>
-                        <span class="text-white">R{{ order.shippingCost.toFixed(2) }}</span>
-                      </div>
-                      <div class="flex justify-between font-orbitron text-sm pt-1">
-                        <span class="text-white">TOTAL</span>
-                        <span class="text-neon-cyan">R{{ order.total.toFixed(2) }}</span>
+                    </div>
+                    <div>
+                      <p class="text-xs font-orbitron text-gray-500 tracking-widest uppercase mb-2">Order Items</p>
+                      <div class="space-y-1">
+                        <div v-for="item in (order.items || [])" :key="item.id" class="flex justify-between text-sm font-rajdhani">
+                          <span class="text-gray-300">{{ item.emoji }} {{ item.productName }} × {{ item.quantity }}</span>
+                          <span class="text-white ml-4 flex-shrink-0">R{{ (parseFloat(item.price) * item.quantity).toFixed(2) }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm font-rajdhani pt-1 border-t border-neon-purple/20">
+                          <span class="text-gray-500">Shipping</span>
+                          <span class="text-white">R{{ order.shippingCost.toFixed(2) }}</span>
+                        </div>
+                        <div class="flex justify-between font-orbitron text-sm pt-1">
+                          <span class="text-white">TOTAL</span>
+                          <span class="text-neon-cyan">R{{ order.total.toFixed(2) }}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
