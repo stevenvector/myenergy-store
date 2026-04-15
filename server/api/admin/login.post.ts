@@ -1,12 +1,13 @@
 export default defineEventHandler(async (event) => {
   const { password } = await readBody(event)
   const config = useRuntimeConfig()
+  const adminPassword = (config.adminPassword as string || 'myenergy2026').trim()
 
-  if (password !== (config.adminPassword || 'myenergy2026')) {
+  if (password.trim() !== adminPassword) {
     throw createError({ statusCode: 401, statusMessage: 'Invalid password' })
   }
 
-  const token = Buffer.from(config.adminPassword || 'myenergy2026').toString('base64')
+  const token = Buffer.from(adminPassword).toString('base64')
 
   setCookie(event, 'admin_token', token, {
     httpOnly: true,
