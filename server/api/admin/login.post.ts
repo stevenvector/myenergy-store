@@ -10,10 +10,10 @@ export default defineEventHandler(async (event) => {
   const token = Buffer.from(adminPassword).toString('base64')
 
   setCookie(event, 'admin_token', token, {
-    httpOnly: true,
-    sameSite: 'strict',
+    sameSite: 'lax',
     maxAge: 60 * 60 * 24, // 24 hours
     path: '/',
+    secure: true,
   })
 
   return { success: true }
