@@ -96,6 +96,7 @@
           class="w-full max-w-2xl my-auto p-4 sm:p-6"
           style="background: #0f0f1a; border: 1px solid rgba(176,38,255,0.4); box-shadow: 0 0 60px rgba(176,38,255,0.2);"
         >
+          <!-- Modal header -->
           <div class="flex items-center justify-between mb-5">
             <h3 class="font-orbitron font-bold text-white tracking-widest text-sm">
               {{ editingProduct ? 'EDIT PRODUCT' : 'CREATE PRODUCT' }}
@@ -104,8 +105,10 @@
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            <!-- ── Identity ───────────────────────────── -->
             <div>
-              <label class="admin-label">ID (slug)</label>
+              <label class="admin-label">ID (slug) *</label>
               <input v-model="form.id" :disabled="!!editingProduct" class="admin-input" placeholder="me-product-name" />
             </div>
             <div>
@@ -113,7 +116,7 @@
               <input v-model="form.emoji" class="admin-input" placeholder="⚡" />
             </div>
             <div class="sm:col-span-2">
-              <label class="admin-label">Name</label>
+              <label class="admin-label">Name *</label>
               <input v-model="form.name" class="admin-input" placeholder="ME PRODUCT NAME" />
             </div>
             <div class="sm:col-span-2">
@@ -124,16 +127,20 @@
               <label class="admin-label">Description</label>
               <textarea v-model="form.description" class="admin-input" rows="3" placeholder="Full product description..." />
             </div>
+
+            <!-- ── Pricing ────────────────────────────── -->
             <div>
-              <label class="admin-label">Price (R)</label>
-              <input v-model.number="form.price" type="number" step="0.01" class="admin-input" placeholder="49.99" />
+              <label class="admin-label">Price (R) *</label>
+              <input v-model.number="form.price" type="number" step="0.01" min="0" class="admin-input" placeholder="49.99" />
             </div>
             <div>
-              <label class="admin-label">Original Price (R, optional)</label>
-              <input v-model.number="form.originalPrice" type="number" step="0.01" class="admin-input" placeholder="59.99" />
+              <label class="admin-label">Original Price (R, for discount)</label>
+              <input v-model.number="form.originalPrice" type="number" step="0.01" min="0" class="admin-input" placeholder="59.99" />
             </div>
+
+            <!-- ── Category ───────────────────────────── -->
             <div>
-              <label class="admin-label">Category</label>
+              <label class="admin-label">Category *</label>
               <select v-model="form.category" class="admin-input">
                 <option value="pre-workout">Pre-Workout</option>
                 <option value="protein">Protein</option>
@@ -148,22 +155,53 @@
               <label class="admin-label">Category Label</label>
               <input v-model="form.categoryLabel" class="admin-input" placeholder="Pre-Workout" />
             </div>
+
+            <!-- ── Inventory ───────────────────────────── -->
             <div>
               <label class="admin-label">Stock</label>
-              <input v-model.number="form.stock" type="number" class="admin-input" placeholder="100" />
+              <input v-model.number="form.stock" type="number" min="0" class="admin-input" placeholder="100" />
             </div>
             <div>
-              <label class="admin-label">Servings</label>
-              <input v-model.number="form.servings" type="number" class="admin-input" placeholder="30" />
+              <label class="admin-label">Servings per container</label>
+              <input v-model.number="form.servings" type="number" min="0" class="admin-input" placeholder="30" />
+            </div>
+
+            <!-- ── Social proof ───────────────────────── -->
+            <div>
+              <label class="admin-label">Rating (0 – 5)</label>
+              <input v-model.number="form.rating" type="number" step="0.1" min="0" max="5" class="admin-input" placeholder="4.5" />
             </div>
             <div>
-              <label class="admin-label">Badge Text (optional)</label>
+              <label class="admin-label">Review count</label>
+              <input v-model.number="form.reviews" type="number" min="0" class="admin-input" placeholder="0" />
+            </div>
+
+            <!-- ── Badge ──────────────────────────────── -->
+            <div>
+              <label class="admin-label">Badge text (optional)</label>
               <input v-model="form.badge" class="admin-input" placeholder="BESTSELLER" />
             </div>
             <div>
-              <label class="admin-label">Accent Color</label>
-              <input v-model="form.accentColor" class="admin-input" placeholder="#b026ff" />
+              <label class="admin-label">Badge colour</label>
+              <select v-model="form.badgeColor" class="admin-input">
+                <option value="neon-purple">Purple</option>
+                <option value="neon-pink">Pink</option>
+                <option value="neon-green">Green</option>
+                <option value="neon-cyan">Cyan</option>
+                <option value="neon-orange">Orange</option>
+              </select>
             </div>
+
+            <!-- ── Style ──────────────────────────────── -->
+            <div class="sm:col-span-2">
+              <label class="admin-label">Accent Colour (hex)</label>
+              <div class="flex gap-2">
+                <input v-model="form.accentColor" class="admin-input flex-1" placeholder="#b026ff" />
+                <input type="color" v-model="form.accentColor" class="h-10 w-10 cursor-pointer bg-transparent border-0 p-0.5 flex-shrink-0" style="border: 1px solid rgba(176,38,255,0.25);" />
+              </div>
+            </div>
+
+            <!-- ── Variants ───────────────────────────── -->
             <div class="sm:col-span-2">
               <label class="admin-label">Flavours (comma-separated)</label>
               <input v-model="flavoursInput" class="admin-input" placeholder="Galaxy Punch, Neon Watermelon, Cosmic Berry" />
@@ -180,6 +218,8 @@
               <label class="admin-label">Ingredients</label>
               <textarea v-model="form.ingredients" class="admin-input" rows="2" />
             </div>
+
+            <!-- ── Flags ──────────────────────────────── -->
             <div class="sm:col-span-2 flex flex-wrap gap-4 sm:gap-6">
               <label class="flex items-center gap-2 text-sm font-rajdhani text-gray-400 cursor-pointer">
                 <input v-model="form.featured" type="checkbox" class="accent-purple-500 w-4 h-4" />
@@ -196,7 +236,9 @@
             </div>
           </div>
 
-          <p v-if="modalError" class="text-neon-pink text-xs font-rajdhani mt-4">{{ modalError }}</p>
+          <!-- Error / success -->
+          <p v-if="modalError" class="text-neon-pink text-xs font-rajdhani mt-4">⚠ {{ modalError }}</p>
+          <p v-if="saveSuccess" class="text-neon-green text-xs font-rajdhani mt-4">✓ Product saved successfully!</p>
 
           <div class="flex flex-col sm:flex-row gap-3 mt-6">
             <button class="btn-neon-primary flex-1 text-xs py-3 sm:py-2" :disabled="saving" @click="saveProduct">
@@ -246,6 +288,7 @@ const editingProduct = ref<any>(null)
 const deletingProduct = ref<any>(null)
 const saving = ref(false)
 const modalError = ref('')
+const saveSuccess = ref(false)
 
 const flavoursInput = ref('')
 const sizesInput = ref('')
@@ -253,7 +296,7 @@ const benefitsInput = ref('')
 
 const emptyForm = () => ({
   id: '', name: '', tagline: '', description: '',
-  price: 0, originalPrice: null as number | null,
+  price: 0 as number, originalPrice: null as number | null,
   category: 'pre-workout', categoryLabel: '',
   badge: '', badgeColor: 'neon-purple',
   stock: 0, servings: 30, rating: 4.5, reviews: 0,
@@ -271,6 +314,7 @@ function openCreate() {
   benefitsInput.value = ''
   editingProduct.value = null
   modalError.value = ''
+  saveSuccess.value = false
   showModal.value = true
 }
 
@@ -278,39 +322,52 @@ function openEdit(p: any) {
   Object.assign(form, {
     ...p,
     originalPrice: p.originalPrice ?? null,
+    badgeColor: p.badgeColor || 'neon-purple',
+    rating: p.rating ?? 4.5,
+    reviews: p.reviews ?? 0,
   })
   flavoursInput.value = (p.flavours || []).join(', ')
   sizesInput.value = (p.sizes || []).join(', ')
   benefitsInput.value = (p.keyBenefits || []).join(', ')
   editingProduct.value = p
   modalError.value = ''
+  saveSuccess.value = false
   showModal.value = true
 }
 
 async function saveProduct() {
   modalError.value = ''
-  if (!form.id || !form.name || !form.price || !form.category) {
-    modalError.value = 'ID, Name, Price and Category are required.'
-    return
-  }
+  saveSuccess.value = false
+
+  if (!form.id.trim()) { modalError.value = 'Product ID is required.'; return }
+  if (!form.name.trim()) { modalError.value = 'Product name is required.'; return }
+  if (!form.price || form.price <= 0) { modalError.value = 'A valid price is required.'; return }
+  if (!form.category) { modalError.value = 'Category is required.'; return }
+
   saving.value = true
   try {
-    form.flavours = flavoursInput.value.split(',').map(s => s.trim()).filter(Boolean)
-    form.sizes = sizesInput.value.split(',').map(s => s.trim()).filter(Boolean)
-    form.keyBenefits = benefitsInput.value.split(',').map(s => s.trim()).filter(Boolean)
-    form.categoryLabel = form.categoryLabel || form.category
+    const payload = {
+      ...form,
+      categoryLabel: form.categoryLabel || form.category,
+      flavours: flavoursInput.value.split(',').map(s => s.trim()).filter(Boolean),
+      sizes: sizesInput.value.split(',').map(s => s.trim()).filter(Boolean),
+      keyBenefits: benefitsInput.value.split(',').map(s => s.trim()).filter(Boolean),
+    }
 
     if (editingProduct.value) {
-      await $fetch(`/api/admin/products/${form.id}`, { method: 'PUT', body: form })
+      await $fetch(`/api/admin/products/${form.id}`, { method: 'PUT', body: payload })
     }
     else {
-      await $fetch('/api/admin/products', { method: 'POST', body: form })
+      await $fetch('/api/admin/products', { method: 'POST', body: payload })
     }
+
     await refresh()
-    showModal.value = false
+    saveSuccess.value = true
+    // Auto-close after a brief success flash
+    setTimeout(() => { showModal.value = false }, 800)
   }
   catch (e: any) {
-    modalError.value = e?.data?.statusMessage || 'Failed to save product.'
+    modalError.value = e?.data?.statusMessage || e?.message || 'Failed to save product. Please try again.'
   }
   finally {
     saving.value = false
@@ -320,7 +377,7 @@ async function saveProduct() {
 async function toggleFeatured(p: any) {
   await $fetch(`/api/admin/products/${p.id}`, {
     method: 'PUT',
-    body: { ...p, featured: !p.featured, flavours: p.flavours, sizes: p.sizes, keyBenefits: p.keyBenefits },
+    body: { ...p, featured: !p.featured },
   })
   await refresh()
 }
@@ -337,6 +394,10 @@ async function deleteProduct() {
     await refresh()
     deletingProduct.value = null
   }
+  catch (e: any) {
+    // Re-use deletingProduct panel to show error
+    console.error('Delete failed:', e)
+  }
   finally {
     saving.value = false
   }
@@ -352,6 +413,7 @@ useHead({ title: 'Products — MyEnergy Admin' })
   border: 1px solid rgba(176,38,255,0.25);
 }
 .admin-input:focus { border-color: rgba(176,38,255,0.6); }
+.admin-input:disabled { opacity: 0.4; cursor: not-allowed; }
 .admin-input option { background: #0f0f1a; }
 .fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }

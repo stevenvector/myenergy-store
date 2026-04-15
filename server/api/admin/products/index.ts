@@ -47,11 +47,11 @@ export default defineEventHandler(async (event) => {
         ${b.price}, ${b.originalPrice || null},
         ${b.category}, ${b.categoryLabel || b.category},
         ${b.badge || null}, ${b.badgeColor || null},
-        ${b.rating || 0}, ${b.reviews || 0}, ${b.stock || 0}, ${b.servings || 0},
-        ${JSON.stringify(b.flavours || [])}, ${JSON.stringify(b.sizes || [])},
-        ${JSON.stringify(b.keyBenefits || [])}, ${b.ingredients || ''},
+        ${b.rating ?? 4.5}, ${b.reviews ?? 0}, ${b.stock ?? 0}, ${b.servings ?? 0},
+        ${sql.json(b.flavours || [])}, ${sql.json(b.sizes || [])},
+        ${sql.json(b.keyBenefits || [])}, ${b.ingredients || ''},
         ${b.emoji || '⚡'}, ${b.gradient || ''}, ${b.accentColor || '#b026ff'},
-        ${b.featured || false}, ${b.bestseller || false}, ${b.newArrival || false}
+        ${b.featured ?? false}, ${b.bestseller ?? false}, ${b.newArrival ?? false}
       )
       RETURNING *
     `

@@ -228,7 +228,7 @@ const mainLinks = [
   { to: '/admin', label: 'Dashboard', icon: '📊' },
 ]
 const catalogueLinks = [
-  { to: '/admin/products', label: 'Products', icon: '⚡', badge: 'CRUD', badgeColor: '#b026ff' },
+  { to: '/admin/products', label: 'Products', icon: '⚡', badge: null, badgeColor: '' },
   { to: '/admin/orders', label: 'Orders', icon: '📦', badge: null, badgeColor: '' },
 ]
 const storefrontLinks = [
